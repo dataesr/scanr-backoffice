@@ -34,17 +34,20 @@ const Authors = (authors) => {
         { name: 'last_name', label: 'Nom' },
         { name: 'id', label: 'id', render: ({ id }) => id?.replace(/^idref/, '') || '' },
         { name: 'affiliations', label: 'Affiliations', render: ({ affiliations }) => {
-            affiliations.map((affiliation, index) => {
+            affiliations = affiliations ? affiliations : [];
+            affiliations?.map((affiliation, index) => {
                 affiliation.key = index;
                 return affiliation
-            })
+            });
             const columns = [
                 { name: 'name', label: 'Libellé' },
                 { name: 'detected_countries', label: 'Pays détectés', render: ({ detected_countries }) => detected_countries.join(', ') },
                 { name: 'ids', label: 'Identifiants', render: ({ ids }) => ids.map((id) => `${id.type}:${id.id}`)}
             ];
             return (
-                <Table caption="" data={affiliations} columns={columns} rowKey="key" />
+                (affiliations.length) ? (
+                    <Table caption="" data={affiliations} columns={columns} rowKey="key" />
+                ) : (<></>)
             )}
         }
     ];

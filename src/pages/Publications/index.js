@@ -1,40 +1,34 @@
-import { useEffect, useState } from 'react';
+import { Elasticsearch, QueryBuilder, Results } from 'react-elasticsearch';
+import { Card, CardDescription, CardDetail, CardTitle } from '@dataesr/react-dsfr';
 
-import 'react-tabulator/lib/styles.css';
-import 'react-tabulator/lib/css/tabulator.min.css';
-import { ReactTabulator } from 'react-tabulator';
-import { ES_INDEX_NAME, getEsClient } from '../../utils';
+const MyCardItem = (props) => {
+    return (
+        <Card key={props.key} href="/">
+            <CardDetail>{props.source.year}</CardDetail>
+            <CardTitle>{props.source.title}</CardTitle>
+            <CardDescription>{props.source.journal_name}</CardDescription>
+        </Card>
+    )
+}
 
 const Publications = () => {
-    const [publications, setPublications] = useState(null);
-
-    const columns = [
-        { title: 'Title', field: '_source.title' },
-        { title: 'DOI', field: '_source.doi' },
-        { title: 'Actions', formatter: (cell) => `<a title="Lien vers la publication" href="./publication/${cell.getRow().getData()._source.doi}">Ouvrir</a>` }
-    ];
-
-    const getPublications = async () => {
-        const client = getEsClient();
-        const results = await client.search({ index: ES_INDEX_NAME, size: 20 });
-        const publications = results?.hits?.hits || {};
-        setPublications(publications);
-    };
-
-    useEffect(() => {
-        if(publications === null) {
-            getPublications();
-        }
-    }, [getPublications]);
-
     return (
-        <div>
-            <h2>
-                Publications
-            </h2>
-            <ReactTabulator columns={columns} data={publications} options={ { layout: 'fitData', pagination: 'local', paginationSize: 10 } } />
-        </div>
-    );
-};
+        <Elasticsearch url="http://localhost:9200/scanr-backoffice">
+            {/* <QueryBuilder
+                id="query_builder"
+                fields={[
+                    { value: "title.keyword", text: "Title" }
+                ]}
+            /> */}
+            <Results
+                id="results"
+                items={data =>
+                    data.map(item => <MyCardItem key={item._id} source={item._source} />)
+                }
+                stats={total => <div>{total} publications</div>}
+            />
+        </Elasticsearch>
+    )
+}
 
 export default Publications;
