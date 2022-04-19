@@ -1,9 +1,11 @@
-import { Elasticsearch, QueryBuilder, Results } from 'react-elasticsearch';
+import { Elasticsearch, Facet, QueryBuilder, Results, SearchBox } from 'react-elasticsearch';
 import { Card, CardDescription, CardDetail, CardTitle } from '@dataesr/react-dsfr';
+
+import './index.css'
 
 const MyCardItem = (props) => {
     return (
-        <Card key={props.key} href="/">
+        <Card key={props.key} href={"publication/" + props.source.doi}>
             <CardDetail>{props.source.year}</CardDetail>
             <CardTitle>{props.source.title}</CardTitle>
             <CardDescription>{props.source.journal_name}</CardDescription>
@@ -20,6 +22,11 @@ const Publications = () => {
                     { value: "title.keyword", text: "Title" }
                 ]}
             /> */}
+            <Facet
+                id="detected_countries"
+                fields={['detected_countries.keyword']}
+            />
+            <SearchBox id="mainSearch" />
             <Results
                 id="results"
                 items={data =>

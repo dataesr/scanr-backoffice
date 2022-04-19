@@ -81,7 +81,7 @@ const Publication = () => {
         if(publication === null) {
             getPublication();
         }
-    }, [getPublication]);
+    }, [getPublication, publication]);
 
     return (
         <div>
